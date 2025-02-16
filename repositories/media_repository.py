@@ -10,5 +10,8 @@ class MediaRepository(Repository):
     def create_media(self, media: Media):
         return self.create(media)
 
+    def create_many_media(self, media_list: list[Media]):
+        return self.create_many(media_list)
+
     def get_media_by_id(self, media_id: int):
         return self.get({"media_id": media_id}, Media)

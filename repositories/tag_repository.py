@@ -10,6 +10,9 @@ class TagRepository(Repository):
     def create_tag(self, tag: Tag):
         return self.create(tag)
 
+    def create_many_tags(self, tag_list: list[Tag]):
+        return self.create_many(tag_list)
+
     def get_tag_by_id(self, tag_id: int):
         return self.get({"tag_id": tag_id}, Tag)
 

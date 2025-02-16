@@ -12,6 +12,10 @@ class Repository:
         """Inserts the document into the collection. The model is expected to have a .to_dict() method."""
         return self.insert(model.to_dict())
 
+    def create_many(self, model_list):
+        documents = [model.to_dict() for model in model_list]
+        return self._collection.insert_many(documents)
+
     def get(self, query: dict, model_class):
         """
         Finds a document by query and returns a model instance.
