@@ -12,3 +12,6 @@ class TagRepository(Repository):
 
     def get_tag_by_id(self, tag_id: int):
         return self.get({"tag_id": tag_id}, Tag)
+
+    def get_tag_by_index(self, tag_index: int):
+        return self.get({"tag_index": tag_index}, Tag)
