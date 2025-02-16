@@ -6,8 +6,8 @@ class Media:
     def __init__(self,
                  media_id: int,
                  media_title: str,
-                 media_genres: list[int],
-                 media_tags: list[int],
+                 media_genres: np.ndarray,
+                 media_tags: np.ndarray,
                  media_description: str,
                  media_embedding: np.ndarray
                  ):
@@ -22,8 +22,8 @@ class Media:
         return {
             "media_id": self.media_id,
             "media_title": self.media_title,
-            "media_genres": self.media_genres,
-            "media_tags": self.media_tags,
+            "media_genres": list(self.media_genres),
+            "media_tags": list(self.media_tags),
             "media_description": self.media_description,
             "media_embedding": self.media_embedding.tolist()  # Convert numpy array to list so mongo doesn't cry rivers
         }
@@ -35,8 +35,8 @@ class Media:
         return cls(
             media_id=data['media_id'],
             media_title=data['media_title'],
-            media_genres=data['media_genres'],
-            media_tags=data['media_tags'],
+            media_genres=np.ndarray(data['media_genres']),
+            media_tags=np.ndarray(data['media_tags']),
             media_description=data['media_description'],
             media_embedding=np.array(data['media_embedding'])
         )
