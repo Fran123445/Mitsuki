@@ -25,4 +25,4 @@ class Repository:
         return model_class.from_dict(document) if document else None
 
     def get_total_amount(self):
-        self._collection.count_documents({})
+        return self._collection.count_documents({})
