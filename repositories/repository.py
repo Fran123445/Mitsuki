@@ -19,3 +19,6 @@ class Repository:
         """
         document = self._collection.find_one(query)
         return model_class.from_dict(document) if document else None
+
+    def get_total_amount(self):
+        self._collection.count_documents({})
