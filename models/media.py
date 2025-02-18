@@ -33,10 +33,10 @@ class Media:
         if data is None:
             return None
         return cls(
-            media_id=data['media_id'],
-            media_title=data['media_title'],
-            media_genres=np.array(data['media_genres']),
-            media_tags=np.array(data['media_tags']),
-            media_description=data['media_description'],
-            media_embedding=np.array(data['media_embedding'])
+            media_id=data.get('media_id', None),
+            media_title=data.get('media_title', None),
+            media_genres=np.array(data.get('media_genres', [])),
+            media_tags=np.array(data.get('media_tags', [])),
+            media_description=data.get('media_description', None),
+            media_embedding=np.array(data.get('media_embedding', []))
         )
