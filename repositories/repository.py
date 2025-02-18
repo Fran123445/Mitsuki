@@ -26,3 +26,8 @@ class Repository:
 
     def get_total_amount(self):
         return self._collection.count_documents({})
+
+    def get_multiple(self, model_class, query: dict = None, projection: dict = None):
+        documents = self._collection.find(query or {}, projection)
+
+        return [model_class.from_dict(document) for document in documents]
