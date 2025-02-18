@@ -35,8 +35,8 @@ class Media:
         return cls(
             media_id=data['media_id'],
             media_title=data['media_title'],
-            media_genres=np.ndarray(data['media_genres']),
-            media_tags=np.ndarray(data['media_tags']),
+            media_genres=np.array(data['media_genres']),
+            media_tags=np.array(data['media_tags']),
             media_description=data['media_description'],
             media_embedding=np.array(data['media_embedding'])
         )
