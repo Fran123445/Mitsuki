@@ -13,19 +13,19 @@ class RecommendationEngine:
         self.media_repository = media_repository
         self.tag_repository = tag_repository
 
-    def extract_scores(self, user_anime_list: list) -> np.ndarray:
+    def extract_scores(self, user_media_list: list) -> np.ndarray:
         """
-        Extract scores from the user anime list.
+        Extract scores from the user media list.
         Replaces missing scores with the average score.
 
         Args:
-            user_anime_list: List of user anime entries.
+            user_media_list: List of user media entries.
 
         Returns:
             A numpy array of scores.
         """
-        scores = [user_anime.get("score") for user_anime in user_anime_list
-                  if self.media_repository.get_media_by_id(user_anime["media"]["id"])]
+        scores = [user_media.get("score") for user_media in user_media_list
+                  if self.media_repository.get_media_by_id(user_media["media"]["id"])]
 
         valid_scores = [s for s in scores if s != 0]
         avg_score = np.average(valid_scores)
@@ -34,30 +34,30 @@ class RecommendationEngine:
 
     def extract_vectors(
             self,
-            user_anime_list: list,
+            user_media_list: list,
             key: str
     ) -> np.ndarray:
         """
-        Extracts vectors (like tags or genres) from each anime in the user list.
+        Extracts vectors (like tags or genres) from each media in the user list.
 
         Args:
-            user_anime_list: List of user anime entries
-            key: Key to extract from the anime data (eg "tags" or "genres")
+            user_media_list: List of user media entries
+            key: Key to extract from the media data (eg "tags" or "genres")
 
         Returns:
-            A numpy array where each row is the vector for that anime.
+            A numpy array where each row is the vector for that media.
         """
         vectors = []
 
-        for user_anime in user_anime_list:
-            media = user_anime.get("media", {})
-            anime_id = media.get("id")
-            anime = self.media_repository.get_media_by_id(anime_id)
+        for user_media in user_media_list:
+            media = user_media.get("media", {})
+            media_id = media.get("id")
+            media = self.media_repository.get_media_by_id(media_id)
 
-            if not anime:
+            if not media:
                 continue
 
-            vector = np.array(getattr(anime, key))
+            vector = np.array(getattr(media, key))
 
             vectors.append(vector)
 
@@ -65,20 +65,20 @@ class RecommendationEngine:
 
     def compute_user_profiles(
             self,
-            user_anime_list: list
+            user_media_list: list
     ):
         """
         Computes weighted average profiles for tags and genres.
 
         Args:
-            user_anime_list: List of user anime entries.
+            user_media_list: List of user media entries.
 
         Returns:
             A tuple (tag_profile, genre_profile) (might change it later)
         """
-        scores = self.extract_scores(user_anime_list)
-        tag_vectors = self.extract_vectors(user_anime_list, key="media_embedding")
-        genre_vectors = self.extract_vectors(user_anime_list, key="media_genres")
+        scores = self.extract_scores(user_media_list)
+        tag_vectors = self.extract_vectors(user_media_list, key="media_embedding")
+        genre_vectors = self.extract_vectors(user_media_list, key="media_genres")
 
         tag_profile = np.average(tag_vectors, axis=0, weights=scores)
         genre_profile = np.average(genre_vectors, axis=0, weights=scores)
@@ -91,7 +91,7 @@ class RecommendationEngine:
     def get_recommendations(self,
                             user_tag_profile: np.ndarray,
                             user_genre_profile: np.ndarray,
-                            watched_anime_ids: set = None,
+                            watched_media_ids: set = None,
                             top_n: int = 25,
                             weight_genres: float = 0.5) -> list[tuple[str, float]]:
         """
@@ -100,29 +100,29 @@ class RecommendationEngine:
         Args:
             user_tag_profile: User's average tag vector.
             user_genre_profile: User's average genre vector.
-            watched_anime_ids: List of anime IDs already watched (to exclude them).
+            watched_media_ids: List of media IDs already watched (to exclude them).
             top_n: Amount of recommendations to return.
             weight_genres: Weighting factor for genre similarity. (not sure about this one either)
 
         Returns:
-            A list of tuples (anime_title, combined_similarity_score).
+            A list of tuples (media_title, combined_similarity_score).
         """
-        watched_anime_ids = watched_anime_ids or {}
+        watched_media_ids = watched_media_ids or {}
         recommendations = []
 
-        for anime in self.media_repository.get_multiple_media({}, {"media_title": 1, "media_embedding": 1, "media_genres": 1, "media_id": 1}):
-            if anime.media_id in watched_anime_ids:
+        for media in self.media_repository.get_multiple_media({}, {"media_title": 1, "media_embedding": 1, "media_genres": 1, "media_id": 1}):
+            if media.media_id in watched_media_ids:
                 continue
 
-            anime_embedding = anime.media_embedding
-            anime_genres = anime.media_genres
+            media_embedding = media.media_embedding
+            media_genres = media.media_genres
 
-            tag_similarity = self.compute_cosine_similarity(user_tag_profile, anime_embedding)
-            genre_similarity = self.compute_cosine_similarity(user_genre_profile, anime_genres)
+            tag_similarity = self.compute_cosine_similarity(user_tag_profile, media_embedding)
+            genre_similarity = self.compute_cosine_similarity(user_genre_profile, media_genres)
 
             # Combine similarities using a weighted average (might change it later)
             combined_similarity = (tag_similarity * (1 - weight_genres)) + (genre_similarity * weight_genres)
-            recommendations.append((anime.media_title, combined_similarity))
+            recommendations.append((media.media_title, combined_similarity))
 
         recommendations.sort(key=lambda x: x[1], reverse=True)
         return recommendations[:top_n]
