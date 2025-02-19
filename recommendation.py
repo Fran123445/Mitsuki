@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.spatial.distance import cosine
+from scipy.spatial.distance import cdist
 
 from repositories.media_repository import MediaRepository
 from repositories.tag_repository import TagRepository
@@ -85,9 +85,6 @@ class RecommendationEngine:
 
         return tag_profile, genre_profile
 
-    def compute_cosine_similarity(self, vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-        return 1 - cosine(vec_a, vec_b)
-
     def get_recommendations(self,
                             user_tag_profile: np.ndarray,
                             user_genre_profile: np.ndarray,
@@ -107,22 +104,26 @@ class RecommendationEngine:
         Returns:
             A list of tuples (media_title, combined_similarity_score).
         """
-        watched_media_ids = watched_media_ids or {}
-        recommendations = []
+        watched_media_ids = watched_media_ids or set()
 
-        for media in self.media_repository.get_multiple_media({}, {"media_title": 1, "media_embedding": 1, "media_genres": 1, "media_id": 1}):
-            if media.media_id in watched_media_ids:
-                continue
+        media_list = self.media_repository.get_multiple_media({}, {"media_title": 1, "media_embedding": 1, "media_genres": 1, "media_id": 1})
+        media_list = [media for media in media_list if media.media_id not in watched_media_ids]
 
-            media_embedding = media.media_embedding
-            media_genres = media.media_genres
+        media_titles = [media.media_title for media in media_list]
 
-            tag_similarity = self.compute_cosine_similarity(user_tag_profile, media_embedding)
-            genre_similarity = self.compute_cosine_similarity(user_genre_profile, media_genres)
+        media_tag_embeddings = np.array([media.media_embedding for media in media_list])
+        media_genres = np.array([media.media_genres for media in media_list])
 
-            # Combine similarities using a weighted average (might change it later)
-            combined_similarity = (tag_similarity * (1 - weight_genres)) + (genre_similarity * weight_genres)
-            recommendations.append((media.media_title, combined_similarity))
+        user_tag_profile = user_tag_profile.reshape(1, -1)  # Reshape to 2D array for performing cosine similarity
+        user_genre_profile = user_genre_profile.reshape(1, -1)
+
+        tag_similarities = 1 - cdist(user_tag_profile, media_tag_embeddings, "cosine").flatten()  # Flattens back to 1D array
+        genre_similarities = 1 - cdist(user_genre_profile, media_genres, "cosine").flatten()
+
+        combined_similarities = weight_genres * genre_similarities + (1 - weight_genres) * tag_similarities
+
+        recommendations = list(zip(media_titles, combined_similarities))
 
         recommendations.sort(key=lambda x: x[1], reverse=True)
+
         return recommendations[:top_n]
