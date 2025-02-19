@@ -1,0 +1,4 @@
+{
+  "transformer_model": "all-mpnet-base-v2",
+  "database_name": "AnilistData"
+}
