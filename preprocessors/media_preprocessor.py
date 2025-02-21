@@ -68,11 +68,15 @@ class MediaPreprocessor:
 
             media_list.append(Media(
                 raw_media_dict['id'],
+                raw_media_dict['idMal'],
                 raw_media_dict['title']['romaji'],
+                raw_media_dict['title']['english'],
                 genre_features,
                 tag_ranks,
                 raw_media_dict.get('description', ''),
                 embedding,
+                raw_media_dict['coverImage']['medium'],
+                raw_media_dict['seasonYear']
             ))
 
         return media_list

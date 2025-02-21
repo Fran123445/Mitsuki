@@ -38,7 +38,9 @@ class AnilistClient:
           Page(page: $page, perPage: 50) {
             media(sort: POPULARITY_DESC, type: ANIME, format_in: [TV, MOVIE, OVA, ONA]) {
               id
+              idMal
               title {
+                english
                 romaji
               }
               genres
@@ -46,7 +48,11 @@ class AnilistClient:
                 id
                 rank
               }
+              coverImage {
+                medium
+              }
               description
+              seasonYear
             }
           }
         }

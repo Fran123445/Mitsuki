@@ -106,10 +106,10 @@ class RecommendationEngine:
         """
         watched_media_ids = watched_media_ids or set()
 
-        media_list = self.media_repository.get_multiple_media({}, {"media_title": 1, "media_embedding": 1, "media_genres": 1, "media_id": 1})
+        media_list = self.media_repository.get_multiple_media({}, {"media_title_romaji": 1, "media_embedding": 1, "media_genres": 1, "media_id": 1})
         media_list = [media for media in media_list if media.media_id not in watched_media_ids]
 
-        media_titles = [media.media_title for media in media_list]
+        media_titles = [media.media_title_romaji for media in media_list]
 
         media_tag_embeddings = np.array([media.media_embedding for media in media_list])
         media_genres = np.array([media.media_genres for media in media_list])
