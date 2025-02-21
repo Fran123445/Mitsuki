@@ -88,7 +88,6 @@ class RecommendationEngine:
     def get_recommendations(self,
                             tag_profile: np.ndarray,
                             genre_profile: np.ndarray,
-                            top_n: int = 25,
                             weight_genres: float = 0.5) -> list[tuple[str, float]]:
         """
         Retrieves the top recommendations by pondering both tag and genre similarities.
@@ -96,7 +95,6 @@ class RecommendationEngine:
         Args:
             tag_profile: Tag vector.
             genre_profile: Genre vector.
-            top_n: Amount of recommendations to return.
             weight_genres: Weighting factor for genre similarity. (not sure about this one either)
 
         Returns:
@@ -122,4 +120,4 @@ class RecommendationEngine:
 
         recommendations.sort(key=lambda x: x[1], reverse=True)
 
-        return recommendations[:top_n]
+        return recommendations
