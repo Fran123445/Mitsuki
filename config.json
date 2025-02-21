@@ -1,4 +1,5 @@
 {
   "transformer_model": "all-mpnet-base-v2",
-  "database_name": "AnilistData"
+  "database_name": "AnilistData",
+  "weight_genres": 0.33
 }
