@@ -17,7 +17,9 @@ class RecommendationService:
 
         for media_id, score in recommendation_list:
             media = self.media_repository.get_media_by_id(media_id)
-            return_list.append((media.media_title_romaji, media.media_image_url, score))
+            return_list.append((media.media_title_romaji, media.image_url, score))
+
+        return return_list
 
     def get_recommendations_from_media(self, media_id: int, top_n: int = 10):
         media = self.media_repository.get_media_by_id(media_id)
