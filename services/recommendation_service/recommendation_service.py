@@ -17,7 +17,11 @@ class RecommendationService:
 
         for media_id, score in recommendation_list:
             media = self.media_repository.get_media_by_id(media_id)
-            return_list.append((media.media_title_romaji, media.image_url, score))
+            return_list.append({
+                "title": media.media_title_romaji,
+                "image_url": media.image_url,
+                "score": score
+            })
 
         return return_list
 
@@ -26,14 +30,9 @@ class RecommendationService:
         tag_profile = media.media_embedding
         genre_profile = media.media_genres
 
-        recommendation_dict = self.recommendation_engine.get_recommendations(
-                                tag_profile,
-                                genre_profile,
-                                weight_genres=self.weight_genres
-                            )
+        recommendation_dict = self.recommendation_engine.get_recommendations(tag_profile,
+                                                                             genre_profile,
+                                                                             weight_genres=self.weight_genres
+                                                                             )
 
         return self._create_return_list(recommendation_dict[1:top_n+1])
-
-
-
-
