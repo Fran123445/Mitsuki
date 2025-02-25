@@ -49,10 +49,15 @@ class AnilistClient:
                 rank
               }
               coverImage {
-                medium
+                large
               }
               description
-              seasonYear
+              startDate {
+                year
+              }
+              averageScore
+              popularity
+              isAdult
             }
           }
         }

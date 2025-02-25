@@ -75,8 +75,11 @@ class MediaPreprocessor:
                 tag_ranks,
                 raw_media_dict.get('description', ''),
                 embedding,
-                raw_media_dict['coverImage']['medium'],
-                raw_media_dict['seasonYear']
+                raw_media_dict['coverImage']['large'],
+                raw_media_dict['startDate']['year'],
+                raw_media_dict.get('averageScore', 0),
+                raw_media_dict.get('popularity', 0),
+                raw_media_dict.get('isAdult', False)
             ))
 
         return media_list

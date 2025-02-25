@@ -13,7 +13,10 @@ class Media:
                  media_description: str,
                  media_embedding: np.ndarray,
                  image_url: str,
-                 season_year: int
+                 year: int,
+                 average_score: int,
+                 popularity: int,
+                 is_adult: bool
                  ):
         self.media_id = media_id
         self.media_id_mal = media_id_mal
@@ -24,7 +27,10 @@ class Media:
         self.media_description = media_description
         self.media_embedding = media_embedding
         self.image_url = image_url
-        self.season_year = season_year
+        self.year = year
+        self.average_score = average_score
+        self.popularity = popularity
+        self.is_adult = is_adult
 
     def to_dict(self):
         return {
@@ -37,7 +43,10 @@ class Media:
             "media_description": self.media_description,
             "media_embedding": self.media_embedding.tolist(),  # Convert numpy array to list so mongo doesn't cry rivers
             "image_url": self.image_url,
-            "season_year": self.season_year
+            "year": self.year,
+            "average_score": self.average_score,
+            "popularity": self.popularity,
+            "is_adult": self.is_adult
         }
 
     @classmethod
@@ -54,5 +63,8 @@ class Media:
             media_description=data.get('media_description', None),
             media_embedding=np.array(data.get('media_embedding', [])),
             image_url=data.get('image_url', None),
-            season_year=data.get('season_year', None)
+            year=data.get('year', None),
+            average_score=data.get('average_score', None),
+            popularity=data.get('popularity', None),
+            is_adult=data.get('is_adult', None)
         )
