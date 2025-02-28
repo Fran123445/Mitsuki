@@ -36,7 +36,8 @@ class AnilistClient:
         query = """
         query ($page: Int) {
           Page(page: $page, perPage: 50) {
-            media(sort: POPULARITY_DESC, type: ANIME, format_in: [TV, MOVIE, OVA, ONA]) {
+            media(sort: POPULARITY_DESC, type: ANIME, format_in: [TV, MOVIE, OVA, ONA],
+                  status_in: [FINISHED, RELEASING]) {
               id
               idMal
               title {
