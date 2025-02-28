@@ -86,6 +86,7 @@ class RecommendationEngine:
         return tag_profile, genre_profile
 
     def get_recommendations(self,
+                            media_list: list,
                             tag_profile: np.ndarray,
                             genre_profile: np.ndarray,
                             weight_genres: float = 0.5) -> list[tuple[str, float]]:
@@ -93,6 +94,7 @@ class RecommendationEngine:
         Retrieves the top recommendations by pondering both tag and genre similarities.
 
         Args:
+            media_list: List of media entries,
             tag_profile: Tag vector.
             genre_profile: Genre vector.
             weight_genres: Weighting factor for genre similarity. (not sure about this one either)
@@ -100,8 +102,6 @@ class RecommendationEngine:
         Returns:
             A list of tuples (media_title, combined_similarity_score).
         """
-
-        media_list = self.media_repository.get_multiple_media({}, {"media_id": 1, "media_embedding": 1, "media_genres": 1})
 
         media_ids = [media.media_id for media in media_list]
 
