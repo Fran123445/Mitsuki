@@ -20,6 +20,7 @@ class RecommendationService:
         for media_id, score in recommendation_list:
             media = self.media_repository.get_media_by_id(media_id)
             return_list.append({
+                "id": media_id,
                 "title": media.media_title_romaji,
                 "image_url": media.image_url,
                 "score": score
