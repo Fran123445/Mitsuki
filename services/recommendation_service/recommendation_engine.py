@@ -103,10 +103,10 @@ class RecommendationEngine:
             A list of tuples (media_title, combined_similarity_score).
         """
 
-        media_ids = [media.media_id for media in media_list]
+        media_ids = [media.id for media in media_list]
 
-        media_tag_embeddings = np.array([media.media_embedding for media in media_list])
-        media_genres = np.array([media.media_genres for media in media_list])
+        media_tag_embeddings = np.array([media.embedding for media in media_list])
+        media_genres = np.array([media.genres for media in media_list])
 
         tag_profile = tag_profile.reshape(1, -1)  # Reshape to 2D array for performing cosine similarity
         genre_profile = genre_profile.reshape(1, -1)

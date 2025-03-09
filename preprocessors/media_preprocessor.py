@@ -77,9 +77,10 @@ class MediaPreprocessor:
                 embedding,
                 raw_media_dict['coverImage']['large'],
                 raw_media_dict['startDate']['year'],
-                raw_media_dict.get('averageScore', 0),
+                raw_media_dict.get('meanScore', 0),
                 raw_media_dict.get('popularity', 0),
-                raw_media_dict.get('isAdult', False)
+                raw_media_dict.get('isAdult', False),
+                raw_media_dict.get('format')
             ))
 
         return media_list

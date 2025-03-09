@@ -56,9 +56,10 @@ class AnilistClient:
               startDate {
                 year
               }
-              averageScore
+              meanScore
               popularity
               isAdult
+              format
             }
           }
         }

@@ -15,7 +15,7 @@ class MediaRepository(Repository):
         return self.create_many(media_list)
 
     def get_media_by_id(self, media_id: int):
-        return self.get({"media_id": media_id}, Media)
+        return self.get({"id": media_id}, Media)
 
     def get_multiple_media(self, filter: dict = None, projection: dict = None):
         if not self.cache:

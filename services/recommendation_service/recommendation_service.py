@@ -21,7 +21,7 @@ class RecommendationService:
             media = self.media_repository.get_media_by_id(media_id)
             return_list.append({
                 "id": media_id,
-                "title": media.media_title_romaji,
+                "title": media.title_romaji,
                 "image_url": media.image_url,
                 "score": score
             })
@@ -30,8 +30,8 @@ class RecommendationService:
 
     def get_recommendations_from_media(self, media_id: int, top_n: int = 10, filter_params: dict = {}):
         media = self.media_repository.get_media_by_id(media_id)
-        tag_profile = media.media_embedding
-        genre_profile = media.media_genres
+        tag_profile = media.embedding
+        genre_profile = media.genres
 
         media_list = self.media_repository.get_multiple_media()
 
