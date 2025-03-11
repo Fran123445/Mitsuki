@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
 
+from repositories.genre_repository import GenreRepository
+from services.recommendation_service.media_list_filters.genre_exclusion_filter import GenreExclusionFilter
 from services.recommendation_service.media_list_filters.score_filter import ScoreFilter
 from services.recommendation_service.media_list_filters.year_filter import YearFilter
 from services.recommendation_service.recommendation_engine import RecommendationEngine
@@ -21,16 +23,18 @@ async def lifespan(app: FastAPI):
     database_name = config["database_name"]
 
     tag_repository = TagRepository(mongo_client, database_name)
+    genre_repository = GenreRepository(mongo_client, database_name)
     anime_repository = MediaRepository(mongo_client, database_name, "anime")
 
     anime_recommender = RecommendationEngine(anime_repository, tag_repository)
 
     year_filter = YearFilter()
     score_filter = ScoreFilter()
+    genre_exclusion_filter = GenreExclusionFilter(genre_repository)
 
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_recommender,
-                                                                   [year_filter, score_filter],
+                                                                   [year_filter, score_filter, genre_exclusion_filter],
                                                                    config["weight_genres"])
 
     yield
