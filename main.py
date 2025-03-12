@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
 
 from repositories.genre_repository import GenreRepository
+from services.recommendation_service.media_list_filters.format_filter import FormatFilter
 from services.recommendation_service.media_list_filters.genre_filter import GenreFilter
 from services.recommendation_service.media_list_filters.score_filter import ScoreFilter
 from services.recommendation_service.media_list_filters.year_filter import YearFilter
@@ -32,10 +33,12 @@ async def lifespan(app: FastAPI):
     score_filter = ScoreFilter()
     genre_exclusion_filter = GenreFilter(genre_repository, True)
     genre_inclusion_filter = GenreFilter(genre_repository, False)
+    format_filter = FormatFilter()
 
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_recommender,
-                                                                   [year_filter, score_filter, genre_exclusion_filter, genre_inclusion_filter],
+                                                                   [year_filter, score_filter, genre_exclusion_filter,
+                                                                    genre_inclusion_filter, format_filter],
                                                                    config["weight_genres"])
 
     yield
@@ -48,7 +51,3 @@ app.include_router(similarity_router.router)
 @app.get("/")
 def root():
     return {"message": "Welcome to the Anilist Recommender API"}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app)
