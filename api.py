@@ -36,7 +36,7 @@ class AnilistClient:
         query = """
         query ($page: Int) {
           Page(page: $page, perPage: 50) {
-            media(sort: POPULARITY_DESC, type: ANIME, format_in: [TV, MOVIE, OVA, ONA],
+            media(sort: POPULARITY_DESC, type: ANIME, format_in: [TV, MOVIE, OVA, ONA, TV_SHORT],
                   status_in: [FINISHED, RELEASING]) {
               id
               idMal
@@ -64,6 +64,42 @@ class AnilistClient:
           }
         }
         """
+        variables = {"page": page}
+        data = self.query(query, variables)
+        return data["data"]["Page"]["media"]
+
+    def get_manga(self, page: int):
+        query = """
+                query ($page: Int) {
+                  Page(page: $page, perPage: 50) {
+                    media(sort: POPULARITY_DESC, type: MANGA,
+                          status_in: [FINISHED, RELEASING]) {
+                      id
+                      idMal
+                      title {
+                        english
+                        romaji
+                      }
+                      genres
+                      tags {
+                        id
+                        rank
+                      }
+                      coverImage {
+                        large
+                      }
+                      description
+                      startDate {
+                        year
+                      }
+                      meanScore
+                      popularity
+                      isAdult
+                      format
+                    }
+                  }
+                }
+                """
         variables = {"page": page}
         data = self.query(query, variables)
         return data["data"]["Page"]["media"]

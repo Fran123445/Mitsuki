@@ -21,6 +21,7 @@ database_name = config["database_name"]
 tag_repository = TagRepository(mongo_client, database_name)
 genre_repository = GenreRepository(mongo_client, database_name)
 anime_repository = MediaRepository(mongo_client, database_name, "anime")
+manga_repository = MediaRepository(mongo_client, database_name, "manga")
 
 transformer = sentence_transformers.SentenceTransformer(config["transformer_model"])
 
@@ -40,7 +41,16 @@ if genre_repository.get_total_amount() == 0:
 
 if anime_repository.get_total_amount() == 0:
     for page in range(1, 201):
+        print(page)
         anime_page = api_client.get_anime(page=page)
         anime_list = media_preprocessor.preprocess(anime_page)
         anime_repository.create_many_media(anime_list)
+        time.sleep(2)  # avoid rate limit
+
+if manga_repository.get_total_amount() == 0:
+    for page in range(1, 201):
+        print(page)
+        manga_page = api_client.get_manga(page=page)
+        manga_list = media_preprocessor.preprocess(manga_page)
+        manga_repository.create_many_media(manga_list)
         time.sleep(2)  # avoid rate limit
