@@ -1,6 +1,7 @@
 import json
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,8 +27,12 @@ async def lifespan(app: FastAPI):
     tag_repository = TagRepository(mongo_client, database_name)
     genre_repository = GenreRepository(mongo_client, database_name)
     anime_repository = MediaRepository(mongo_client, database_name, "anime")
+    manga_repository = MediaRepository(mongo_client, database_name, "manga")
 
     anime_recommender = RecommendationEngine(anime_repository, tag_repository)
+    manga_recommender = RecommendationEngine(manga_repository, tag_repository)
+
+    weight_genres = config["weight_genres"]
 
     year_filter = YearFilter()
     score_filter = ScoreFilter()
@@ -35,11 +40,18 @@ async def lifespan(app: FastAPI):
     genre_inclusion_filter = GenreFilter(genre_repository, False)
     format_filter = FormatFilter()
 
+    filter_list = [year_filter, score_filter, genre_exclusion_filter,
+                   genre_inclusion_filter, format_filter]
+
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_recommender,
-                                                                   [year_filter, score_filter, genre_exclusion_filter,
-                                                                    genre_inclusion_filter, format_filter],
-                                                                   config["weight_genres"])
+                                                                   filter_list,
+                                                                   weight_genres)
+
+    app.state.manga_recommendation_service = RecommendationService(manga_repository,
+                                                                   manga_recommender,
+                                                                   filter_list,
+                                                                   weight_genres)
 
     yield
 
@@ -51,3 +63,6 @@ app.include_router(similarity_router.router)
 @app.get("/")
 def root():
     return {"message": "Welcome to the Anilist Recommender API"}
+
+if __name__ == "__main__":
+    uvicorn.run(app)

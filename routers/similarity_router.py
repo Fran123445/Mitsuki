@@ -28,3 +28,7 @@ def common_params(
 @router.get("/anime")
 def get_top_similar_anime(id: int, request: Request, params: dict = Depends(common_params)):
     return request.app.state.anime_recommendation_service.get_recommendations_from_media(id, params["top_n"], params)
+
+@router.get("/manga")
+def get_top_similar_manga(id: int, request: Request, params: dict = Depends(common_params)):
+    return request.app.state.manga_recommendation_service.get_recommendations_from_media(id, params["top_n"], params)

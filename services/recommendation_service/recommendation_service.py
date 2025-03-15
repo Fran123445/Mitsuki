@@ -38,10 +38,12 @@ class RecommendationService:
         for filter in self.filter_list:
             media_list = filter.filter(media_list, filter_params)
 
+        media_list = [media for media in media_list if media.id != media_id]
+
         recommendation_dict = self.recommendation_engine.get_recommendations(media_list,
                                                                              tag_profile,
                                                                              genre_profile,
                                                                              weight_genres=self.weight_genres
                                                                              )
 
-        return self._create_return_list(recommendation_dict[1:top_n+1])
+        return self._create_return_list(recommendation_dict[:top_n])
