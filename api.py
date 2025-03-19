@@ -104,25 +104,47 @@ class AnilistClient:
         data = self.query(query, variables)
         return data["data"]["Page"]["media"]
 
-    def get_user_completed_list(self, username: str) -> list:
+    def get_user_data(self, username: str) -> list:
         query = """
-        query ($username: String) {
-          MediaListCollection(userName: $username, type: ANIME, status: COMPLETED) {
+        query($userName: String) {
+          User(name: $userName) {
+            avatar {
+              medium
+            }
+          },
+          anime: MediaListCollection(userName: $userName, type: ANIME, status: COMPLETED) {
             lists {
               entries {
-                media {
-                  id
-                  title {
-                    userPreferred
-                  }
-                }
-                score (format: POINT_10)
+                mediaId
+                score(format: POINT_10)
               }
             }
-          }
+          },
+          manga: MediaListCollection(userName:  $userName, type: MANGA, status: COMPLETED) {
+            lists {
+              entries {
+                mediaId
+                score(format: POINT_10)
+              }
+            },
+          },
+          planned_anime: MediaListCollection(userName:  $userName, type: ANIME, status: PLANNING) {
+            lists {
+              entries {
+                mediaId
+              }
+            }
+          },
+          planned_manga: MediaListCollection(userName:  $userName, type: MANGA, status: PLANNING) {
+            lists {
+              entries {
+                mediaId
+              }
+            }
+          },
         }
         """
         variables = {"username": username}
         data = self.query(query, variables)
 
-        return data["data"]["MediaListCollection"]["lists"][0]["entries"]
+        return data["data"]
