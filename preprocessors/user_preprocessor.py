@@ -1,3 +1,5 @@
+from models.user.media_entry import MediaEntry
+from models.user.user import User
 
 
 class UserPreprocessor():
