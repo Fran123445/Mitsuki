@@ -108,6 +108,7 @@ class AnilistClient:
         query = """
         query($userName: String) {
           User(name: $userName) {
+            name
             avatar {
               medium
             }

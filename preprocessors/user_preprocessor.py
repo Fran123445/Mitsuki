@@ -5,6 +5,7 @@ from models.user.user import User
 class UserPreprocessor():
 
     def preprocess(self, raw_user_data):
+        username = raw_user_data["User"]["name"]
         avatar_url = raw_user_data["User"]["avatar"]["medium"]
         watched_anime = []
         read_manga = []
@@ -27,6 +28,6 @@ class UserPreprocessor():
             for entry in list_data["entries"]:
                 planned_manga.append(entry["mediaId"])
 
-        return User(avatar_url, watched_anime, read_manga, planned_anime, planned_manga)
+        return User(username, avatar_url, watched_anime, read_manga, planned_anime, planned_manga)
 
     
