@@ -32,3 +32,21 @@ def get_top_similar_anime(id: int, request: Request, params: dict = Depends(comm
 @router.get("/manga")
 def get_top_similar_manga(id: int, request: Request, params: dict = Depends(common_params)):
     return request.app.state.manga_recommendation_service.get_recommendations_from_media(id, params["top_n"], params)
+
+@router.get("/user/anime")
+def get_user_anime( username:str, request: Request, params: dict = Depends(common_params)):
+    user_data = request.app.state.user_fetching_service.fetch_user_data(username)
+    watched_anime = user_data.watched_anime
+
+    params["planned_media"] = user_data.planned_anime
+
+    return request.app.state.anime_recommendation_service.get_recommendations_from_user(watched_anime, params["top_n"], params)
+
+@router.get("/user/manga")
+def get_user_manga( username:str, request: Request, params: dict = Depends(common_params)):
+    user_data = request.app.state.user_fetching_service.fetch_user_data(username)
+    watched_manga = user_data.read_manga
+
+    params["planned_media"] = user_data.planned_manga
+
+    return request.app.state.manga_recommendation_service.get_recommendations_from_user(watched_manga, params["top_n"], params)
