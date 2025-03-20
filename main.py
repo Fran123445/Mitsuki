@@ -16,7 +16,9 @@ from repositories.media_repository import MediaRepository
 from repositories.tag_repository import TagRepository
 from routers import similarity_router
 from services.recommendation_service.recommendation_service import RecommendationService
-
+from services.user_fetching_service.user_fetching_service import UserFetchingService
+from preprocessors.user_preprocessor import UserPreprocessor
+from api import AnilistClient
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,6 +44,8 @@ async def lifespan(app: FastAPI):
 
     filter_list = [year_filter, score_filter, genre_exclusion_filter,
                    genre_inclusion_filter, format_filter]
+
+    app.state.user_fetching_service = UserFetchingService(AnilistClient(), UserPreprocessor())
 
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_recommender,
