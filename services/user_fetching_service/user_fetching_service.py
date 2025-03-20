@@ -1,4 +1,5 @@
 from api import AnilistClient
+from models.user.user import User
 from preprocessors.user_preprocessor import UserPreprocessor
 
 class UserFetchingService:
@@ -7,12 +8,15 @@ class UserFetchingService:
         self.user_preprocessor = user_preprocessor
         self.user_dictionary = {} # Probably a bad idea
 
-    def fetch_user_data(self, username: str):
-        if self.user_dictionary.get(username, None):
-            return self.user_dictionary[username]
+    def _create_return_dict(self, user: User):
+        return {"username": user.username, "avatar_url": user.avatar_url}
 
-        raw_user_data = self.api.get_user_data(username)
-        user = self.user_preprocessor.preprocess(raw_user_data)
-        self.user_dictionary[username] = user
+    def fetch_user_data(self, username: str):
+        user = self.user_dictionary.get(username, None)
+
+        if not user:
+            raw_user_data = self.api.get_user_data(username)
+            user = self.user_preprocessor.preprocess(raw_user_data)
+            self.user_dictionary[username] = user
         
-        return user
+        return self._create_return_dict(user)
