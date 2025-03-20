@@ -24,13 +24,13 @@ class RecommendationEngine:
         Returns:
             A numpy array of scores.
         """
-        scores = [user_media.get("score") for user_media in user_media_list
-                  if self.media_repository.get_media_by_id(user_media["media"]["id"])]
+        scores = [media_entry.score for media_entry in user_media_list
+                  if self.media_repository.get_media_by_id(media_entry.id)]
 
         valid_scores = [s for s in scores if s != 0]
         avg_score = np.average(valid_scores)
 
-        return np.array([s if s != 0 else avg_score for s in scores])
+        return np.array([s**2 if s != 0 else avg_score for s in scores])
 
     def extract_vectors(
             self,
@@ -49,9 +49,8 @@ class RecommendationEngine:
         """
         vectors = []
 
-        for user_media in user_media_list:
-            media = user_media.get("media", {})
-            media_id = media.get("id")
+        for media_entry in user_media_list:
+            media_id = media_entry.id
             media = self.media_repository.get_media_by_id(media_id)
 
             if not media:
@@ -77,8 +76,8 @@ class RecommendationEngine:
             A tuple (tag_profile, genre_profile) (might change it later)
         """
         scores = self.extract_scores(user_media_list)
-        tag_vectors = self.extract_vectors(user_media_list, key="media_embedding")
-        genre_vectors = self.extract_vectors(user_media_list, key="media_genres")
+        tag_vectors = self.extract_vectors(user_media_list, key="embedding")
+        genre_vectors = self.extract_vectors(user_media_list, key="genres")
 
         tag_profile = np.average(tag_vectors, axis=0, weights=scores)
         genre_profile = np.average(genre_vectors, axis=0, weights=scores)
