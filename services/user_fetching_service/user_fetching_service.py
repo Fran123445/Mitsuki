@@ -1,4 +1,5 @@
-
+from api import AnilistClient
+from preprocessors.user_preprocessor import UserPreprocessor
 
 class UserFetchingService:
     def __init__(self, api: AnilistClient, user_preprocessor: UserPreprocessor):
