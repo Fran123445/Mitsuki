@@ -14,7 +14,7 @@ from services.recommendation_service.media_list_filters.year_filter import YearF
 from services.recommendation_service.recommendation_engine import RecommendationEngine
 from repositories.media_repository import MediaRepository
 from repositories.tag_repository import TagRepository
-from routers import similarity_router
+from routers import similarity_router, user_router
 from services.recommendation_service.recommendation_service import RecommendationService
 from services.user_fetching_service.user_fetching_service import UserFetchingService
 from preprocessors.user_preprocessor import UserPreprocessor
@@ -63,6 +63,7 @@ config = json.load(open("config.json"))
 app = FastAPI(title="Anilist Recommender API", lifespan=lifespan)  # placeholder name
 
 app.include_router(similarity_router.router)
+app.include_router(user_router.router)
 
 @app.get("/")
 def root():
