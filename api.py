@@ -116,7 +116,7 @@ class AnilistClient:
             lists {
               entries {
                 mediaId
-                score(format: POINT_10)
+                score(format: POINT_100)
               }
             }
           },
@@ -124,7 +124,7 @@ class AnilistClient:
             lists {
               entries {
                 mediaId
-                score(format: POINT_10)
+                score(format: POINT_100)
               }
             },
           },
@@ -144,7 +144,7 @@ class AnilistClient:
           },
         }
         """
-        variables = {"username": username}
+        variables = {"userName": username}
         data = self.query(query, variables)
 
         return data["data"]
