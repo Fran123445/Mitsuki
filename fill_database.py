@@ -4,7 +4,7 @@ import time
 import sentence_transformers
 from pymongo import MongoClient
 
-from api import AnilistClient
+from external_apis.anilist_api import AnilistApi
 from preprocessors.genre_preprocessor import GenrePreprocessor
 from preprocessors.media_preprocessor import MediaPreprocessor
 from preprocessors.tag_preprocessor import TagPreprocessor
@@ -14,7 +14,7 @@ from repositories.tag_repository import TagRepository
 
 config = json.load(open("config.json"))
 
-api_client = AnilistClient()
+api_client = AnilistApi()
 
 mongo_client = MongoClient()
 database_name = config["database_name"]

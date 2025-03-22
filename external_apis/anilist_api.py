@@ -1,6 +1,9 @@
 import requests
 
-class AnilistClient:
+from external_apis.external_api import ExternalApi
+
+
+class AnilistApi(ExternalApi):
     BASE_URL = 'https://graphql.anilist.co'
 
     def query(self, query: str, variables: dict = None) -> dict:

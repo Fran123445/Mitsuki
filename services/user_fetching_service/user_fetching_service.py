@@ -1,9 +1,9 @@
-from api import AnilistClient
-from models.user.user import User
+from external_apis.anilist_api import AnilistApi
+from external_apis.external_api import ExternalApi
 from preprocessors.user_preprocessor import UserPreprocessor
 
 class UserFetchingService:
-    def __init__(self, api: AnilistClient, user_preprocessor: UserPreprocessor):
+    def __init__(self, api: ExternalApi, user_preprocessor: UserPreprocessor):
         self.api = api
         self.user_preprocessor = user_preprocessor
         self.user_dictionary = {} # Probably a bad idea
