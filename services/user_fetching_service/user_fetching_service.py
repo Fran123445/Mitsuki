@@ -1,6 +1,5 @@
-from external_apis.anilist_api import AnilistApi
 from external_apis.external_api import ExternalApi
-from preprocessors.user_preprocessor import UserPreprocessor
+from preprocessors.user_preprocessors.user_preprocessor import UserPreprocessor
 
 class UserFetchingService:
     def __init__(self, api: ExternalApi, user_preprocessor: UserPreprocessor):

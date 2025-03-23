@@ -1,8 +1,9 @@
 from models.user.media_entry import MediaEntry
 from models.user.user import User
+from preprocessors.user_preprocessors.user_preprocessor import UserPreprocessor
 
 
-class UserPreprocessor():
+class AnilistUserPreprocessor(UserPreprocessor):
 
     def preprocess(self, raw_user_data):
         username = raw_user_data["User"]["name"]
