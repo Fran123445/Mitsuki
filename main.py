@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
 
+from external_apis.mal_api import MalApi
+from preprocessors.user_preprocessors.mal_user_preprocessor import MalUserPreprocessor
 from repositories.genre_repository import GenreRepository
 from services.recommendation_service.media_list_filters.format_filter import FormatFilter
 from services.recommendation_service.media_list_filters.genre_filter import GenreFilter
@@ -45,7 +47,8 @@ async def lifespan(app: FastAPI):
     filter_list = [year_filter, score_filter, genre_exclusion_filter,
                    genre_inclusion_filter, format_filter]
 
-    app.state.user_fetching_service = UserFetchingService(AnilistApi(), AnilistUserPreprocessor())
+    app.state.anilist_user_fetching_service = UserFetchingService(AnilistApi(), AnilistUserPreprocessor())
+    app.state.mal_user_fetching_service = UserFetchingService(MalApi(), MalUserPreprocessor())
 
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_recommender,
