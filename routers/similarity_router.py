@@ -34,19 +34,30 @@ def get_top_similar_manga(id: int, request: Request, params: dict = Depends(comm
     return request.app.state.manga_recommendation_service.get_recommendations_from_media(id, params["top_n"], params)
 
 @router.get("/user/anime")
-def get_user_anime( username:str, request: Request, params: dict = Depends(common_params)):
-    user_data = request.app.state.user_fetching_service.fetch_user_data(username)
-    watched_anime = user_data.watched_anime
-
-    params["planned_media"] = user_data.planned_anime
-
-    return request.app.state.anime_recommendation_service.get_recommendations_from_user(watched_anime, params["top_n"], params)
+def get_user_anime(username: str, platform: str, request: Request, params: dict = Depends(common_params)):
+    return _get_user_recommendations(username, platform, request, params, "anime")
 
 @router.get("/user/manga")
-def get_user_manga( username:str, request: Request, params: dict = Depends(common_params)):
-    user_data = request.app.state.user_fetching_service.fetch_user_data(username)
-    watched_manga = user_data.read_manga
+def get_user_manga(username: str, platform: str, request: Request, params: dict = Depends(common_params)):
+    return _get_user_recommendations(username, platform, request, params, "manga")
 
-    params["planned_media"] = user_data.planned_manga
+def _get_user_recommendations(username: str, platform: str, request: Request, params: dict, media_type: str):
+    if platform == "anilist":
+        user_data = request.app.state.anilist_user_fetching_service.fetch_user_data(username)
+    elif platform == "myanimelist":
+        user_data = request.app.state.mal_user_fetching_service.fetch_user_data(username)
+    else:
+        raise ValueError(f"Unsupported platform: {platform}")
 
-    return request.app.state.manga_recommendation_service.get_recommendations_from_user(watched_manga, params["top_n"], params)
+    if media_type == "anime":
+        watched_media = user_data.watched_anime
+        params["planned_media"] = user_data.planned_anime
+        return request.app.state.anime_recommendation_service.get_recommendations_from_user(watched_media,
+                                                                                            params["top_n"], params)
+    elif media_type == "manga":
+        watched_media = user_data.read_manga
+        params["planned_media"] = user_data.planned_manga
+        return request.app.state.manga_recommendation_service.get_recommendations_from_user(watched_media,
+                                                                                            params["top_n"], params)
+    else:
+        raise ValueError(f"Unsupported media type: {media_type}")
