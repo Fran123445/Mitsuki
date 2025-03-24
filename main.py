@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
                    genre_inclusion_filter, format_filter]
 
     app.state.anilist_user_fetching_service = UserFetchingService(AnilistApi(), AnilistUserPreprocessor())
-    app.state.mal_user_fetching_service = UserFetchingService(MalApi(), MalUserPreprocessor())
+    app.state.mal_user_fetching_service = UserFetchingService(MalApi(), MalUserPreprocessor(anime_repository, manga_repository))
 
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_recommender,
