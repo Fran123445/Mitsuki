@@ -18,9 +18,10 @@ class MediaRepository(Repository):
         return self.get({"id": media_id}, Media)
 
     def get_multiple_media(self, filter: dict = None, projection: dict = None):
-        if not self.cache:
-            self.cache = self.get_multiple(Media, filter, projection)
-            # considering the current use case and the size of the dataset
-            # I think it's reasonable
+        if filter is None and projection is None:
+            if not self.cache:
+                self.cache = self.get_multiple(Media, filter, projection)
+                
+            return self.cache
 
-        return self.cache
+        return self.get_multiple(Media, filter, projection)
