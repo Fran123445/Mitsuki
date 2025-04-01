@@ -42,9 +42,12 @@ def get_user_manga(username: str, platform: str, request: Request, params: dict 
     return _get_user_recommendations(username, platform, request, params, "manga")
 
 def _get_user_recommendations(username: str, platform: str, request: Request, params: dict, media_type: str):
-    if platform == "anilist":
+
+    # This is terrible and I should be tortured for having written this piece of code
+
+    if platform == "AniList":
         user_data = request.app.state.anilist_user_fetching_service.fetch_user_data(username)
-    elif platform == "myanimelist":
+    elif platform == "MyAnimeList":
         user_data = request.app.state.mal_user_fetching_service.fetch_user_data(username)
     else:
         raise ValueError(f"Unsupported platform: {platform}")
