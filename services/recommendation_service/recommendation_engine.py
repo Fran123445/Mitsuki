@@ -117,6 +117,8 @@ class RecommendationEngine:
 
         recommendations = list(zip(media_ids, combined_similarities))
 
+        recommendations = [(id, similarity) for (id, similarity) in recommendations if not np.isnan(similarity)]
+
         recommendations.sort(key=lambda x: x[1], reverse=True)
 
         return recommendations
