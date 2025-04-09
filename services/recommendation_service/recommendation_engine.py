@@ -76,7 +76,7 @@ class RecommendationEngine:
             A tuple (tag_profile, genre_profile) (might change it later)
         """
         scores = self.extract_scores(user_media_list)
-        tag_vectors = self.extract_vectors(user_media_list, key="embedding")
+        tag_vectors = self.extract_vectors(user_media_list, key="tag_embedding")
         genre_vectors = self.extract_vectors(user_media_list, key="genres")
 
         tag_profile = np.average(tag_vectors, axis=0, weights=scores)
@@ -104,7 +104,7 @@ class RecommendationEngine:
 
         media_ids = [media.id for media in media_list]
 
-        media_tag_embeddings = np.array([media.embedding for media in media_list])
+        media_tag_embeddings = np.array([media.tag_embedding for media in media_list])
         media_genres = np.array([media.genres for media in media_list])
 
         tag_profile = tag_profile.reshape(1, -1)  # Reshape to 2D array for performing cosine similarity

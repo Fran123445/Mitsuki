@@ -16,55 +16,42 @@ class MediaPreprocessor:
         self.tag_repository = tag_repository
         self.sentence_transformer = sentence_transformer
 
-    def _get_anime_embedding(self, tag_ranks):
-        # Find the indices where the tag weight is greater than zero
-        active_indices = [i for i, weight in enumerate(tag_ranks) if weight > 0]
-
+    def _get_tag_embedding(self, tag_dict):
         # If no tags are active, return a zero vector (might not be ideal but IDK)
-        if not active_indices:
+        if not tag_dict:
             return np.zeros(self.sentence_transformer.get_sentence_embedding_dimension())
 
-        tags = []
-
-        for index in active_indices:
-            tags.append(self.tag_repository.get_tag_by_index(index))
-
-        # Prepare lists for embeddings and their corresponding weights.
         embeddings = []
         weights = []
 
-        # Create a mapping from tag index to its weight in the anime document.
-        weight_map = {i: tag_ranks[i] for i in active_indices}
-
-        for tag in tags:
-            idx = tag.index
+        for id, rank in tag_dict.items():
+            tag = self.tag_repository.get_tag_by_id(id)
             embeddings.append(tag.embedding)
-            weights.append(weight_map[idx])
+            weights.append(rank)
 
         return np.average(np.array(embeddings), axis=0, weights=np.array(weights))
 
     def preprocess(self, raw_media_list: list[dict]):
-        tags_size = self.tag_repository.get_total_amount()
         genres_size = self.genre_repository.get_total_amount()
 
         media_list = []
 
         for raw_media_dict in raw_media_list:
+            tag_dict = {}
+
             # Create feature vectors
-            tag_ranks = np.zeros(tags_size)
             genre_features = np.zeros(genres_size)
 
             # Process tags
             for tag in raw_media_dict.get('tags'):
-                tag_object = self.tag_repository.get_tag_by_id(tag['id'])
-                tag_ranks[tag_object.index] = tag.get('rank', 0)
+                tag_dict[tag["id"]] = tag["rank"]
 
             # Process genres
             for genre in raw_media_dict.get('genres', []):
                 genre_object = self.genre_repository.get_genre_by_name(genre)
                 genre_features[genre_object.index] = 1
 
-            embedding = self._get_anime_embedding(tag_ranks)
+            tag_embedding = self._get_tag_embedding(tag_dict)
 
             media_list.append(Media(
                 raw_media_dict['id'],
@@ -72,9 +59,9 @@ class MediaPreprocessor:
                 raw_media_dict['title']['romaji'],
                 raw_media_dict['title']['english'],
                 genre_features,
-                tag_ranks,
+                tag_dict,
                 raw_media_dict.get('description', ''),
-                embedding,
+                tag_embedding,
                 raw_media_dict['coverImage']['large'],
                 raw_media_dict['startDate']['year'],
                 raw_media_dict.get('meanScore', 0),

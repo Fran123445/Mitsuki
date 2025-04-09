@@ -58,7 +58,7 @@ class RecommendationService:
 
     def get_recommendations_from_media(self, media_id: int, top_n: int, filter_params: dict):
         media = self.media_repository.get_media_by_id(media_id)
-        tag_profile = media.embedding
+        tag_profile = media.tag_embedding
         genre_profile = media.genres
 
         return self._get_recommendations([media], tag_profile, genre_profile, top_n, filter_params)

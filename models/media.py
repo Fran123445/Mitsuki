@@ -9,9 +9,9 @@ class Media:
                  title_romaji: str,
                  title_english: str,
                  genres: np.ndarray,
-                 tags: np.ndarray,
+                 tags: dict,
                  description: str,
-                 embedding: np.ndarray,
+                 tag_embedding: np.ndarray,
                  image_url: str,
                  year: int,
                  mean_score: int,
@@ -26,7 +26,7 @@ class Media:
         self.genres = genres
         self.tags = tags
         self.descriptions = description
-        self.embedding = embedding
+        self.tag_embedding = tag_embedding
         self.image_url = image_url
         self.year = year
         self.mean_score = mean_score
@@ -41,9 +41,9 @@ class Media:
             "title_romaji": self.title_romaji,
             "title_english": self.title_english,
             "genres": list(self.genres),
-            "tags": list(self.tags),
+            "tags": self.tags,
             "description": self.descriptions,
-            "embedding": self.embedding.tolist(),  # Convert numpy array to list so mongo doesn't cry rivers
+            "tag_embedding": self.tag_embedding.tolist(),  # Convert numpy array to list so mongo doesn't cry rivers
             "image_url": self.image_url,
             "year": self.year,
             "mean_score": self.mean_score,
@@ -62,9 +62,9 @@ class Media:
             title_romaji=data.get('title_romaji', None),
             title_english=data.get('title_english', None),
             genres=np.array(data.get('genres', [])),
-            tags=np.array(data.get('tags', [])),
+            tags=data.get('tags', {}),
             description=data.get('description', None),
-            embedding=np.array(data.get('embedding', [])),
+            tag_embedding=np.array(data.get('tag_embedding', [])),
             image_url=data.get('image_url', None),
             year=data.get('year', None),
             mean_score=data.get('mean_score', None),
