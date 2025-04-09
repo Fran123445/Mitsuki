@@ -16,7 +16,7 @@ class MediaPreprocessor:
         self.tag_repository = tag_repository
         self.sentence_transformer = sentence_transformer
 
-    def _get_tag_embedding(self, tag_dict):
+    def _get_tag_embedding(self, tag_dict: dict):
         # If no tags are active, return a zero vector (might not be ideal but IDK)
         if not tag_dict:
             return np.zeros(self.sentence_transformer.get_sentence_embedding_dimension())
@@ -31,37 +31,42 @@ class MediaPreprocessor:
 
         return np.average(np.array(embeddings), axis=0, weights=np.array(weights))
 
+    def _get_genre_embedding(self, genre_list: list):
+        embeddings = []
+
+        for genre_name in genre_list:
+            genre = self.genre_repository.get_genre_by_name(genre_name)
+            embeddings.append(genre.embedding)
+
+        return np.average(embeddings, axis=0)
+
     def preprocess(self, raw_media_list: list[dict]):
-        genres_size = self.genre_repository.get_total_amount()
 
         media_list = []
 
         for raw_media_dict in raw_media_list:
             tag_dict = {}
 
-            # Create feature vectors
-            genre_features = np.zeros(genres_size)
-
             # Process tags
             for tag in raw_media_dict.get('tags'):
                 tag_dict[tag["id"]] = tag["rank"]
 
-            # Process genres
-            for genre in raw_media_dict.get('genres', []):
-                genre_object = self.genre_repository.get_genre_by_name(genre)
-                genre_features[genre_object.index] = 1
-
             tag_embedding = self._get_tag_embedding(tag_dict)
+
+            genres = raw_media_dict.get("genres", [])
+
+            genre_embedding = self._get_genre_embedding(genres)
 
             media_list.append(Media(
                 raw_media_dict['id'],
                 raw_media_dict['idMal'],
                 raw_media_dict['title']['romaji'],
                 raw_media_dict['title']['english'],
-                genre_features,
+                set(genres),
                 tag_dict,
                 raw_media_dict.get('description', ''),
                 tag_embedding,
+                genre_embedding,
                 raw_media_dict['coverImage']['large'],
                 raw_media_dict['startDate']['year'],
                 raw_media_dict.get('meanScore', 0),

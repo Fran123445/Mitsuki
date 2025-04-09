@@ -1,18 +1,18 @@
-
+import numpy as np
 
 class Genre:
 
     def __init__(self,
                  genre_name: str,
-                 genre_index: int
+                 embedding: np.ndarray
                  ):
         self.name = genre_name
-        self.index = genre_index
+        self.embedding = embedding
 
     def to_dict(self):
         return {
             "genre_name": self.name,
-            "genre_index": self.index
+            "embedding": self.embedding
         }
 
     @classmethod
@@ -21,5 +21,5 @@ class Genre:
             return None
         return cls(
             genre_name=data['genre_name'],
-            genre_index=data['genre_index']
+            embedding=data['embedding']
         )

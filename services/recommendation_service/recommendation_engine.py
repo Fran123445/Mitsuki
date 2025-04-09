@@ -77,7 +77,7 @@ class RecommendationEngine:
         """
         scores = self.extract_scores(user_media_list)
         tag_vectors = self.extract_vectors(user_media_list, key="tag_embedding")
-        genre_vectors = self.extract_vectors(user_media_list, key="genres")
+        genre_vectors = self.extract_vectors(user_media_list, key="genre_embedding")
 
         tag_profile = np.average(tag_vectors, axis=0, weights=scores)
         genre_profile = np.average(genre_vectors, axis=0, weights=scores)
@@ -105,13 +105,13 @@ class RecommendationEngine:
         media_ids = [media.id for media in media_list]
 
         media_tag_embeddings = np.array([media.tag_embedding for media in media_list])
-        media_genres = np.array([media.genres for media in media_list])
+        media_genres_embeddings = np.array([media.genre_embedding for media in media_list])
 
         tag_profile = tag_profile.reshape(1, -1)  # Reshape to 2D array for performing cosine similarity
         genre_profile = genre_profile.reshape(1, -1)
 
         tag_similarities = 1 - cdist(tag_profile, media_tag_embeddings, "cosine").flatten()  # Flattens back to 1D array
-        genre_similarities = 1 - cdist(genre_profile, media_genres, "cosine").flatten()
+        genre_similarities = 1 - cdist(genre_profile, media_genres_embeddings, "cosine").flatten()
 
         combined_similarities = weight_genres * genre_similarities + (1 - weight_genres) * tag_similarities
 
