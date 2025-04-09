@@ -12,7 +12,7 @@ class Genre:
     def to_dict(self):
         return {
             "genre_name": self.name,
-            "embedding": self.embedding
+            "embedding": self.embedding.tolist()
         }
 
     @classmethod
@@ -21,5 +21,5 @@ class Genre:
             return None
         return cls(
             genre_name=data['genre_name'],
-            embedding=data['embedding']
+            embedding=np.array(data['embedding'])
         )

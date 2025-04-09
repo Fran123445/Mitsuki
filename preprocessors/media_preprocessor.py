@@ -17,21 +17,24 @@ class MediaPreprocessor:
         self.sentence_transformer = sentence_transformer
 
     def _get_tag_embedding(self, tag_dict: dict):
-        # If no tags are active, return a zero vector (might not be ideal but IDK)
+        # If no tags, return a zero vector (might not be ideal but IDK)
         if not tag_dict:
             return np.zeros(self.sentence_transformer.get_sentence_embedding_dimension())
 
         embeddings = []
         weights = []
 
-        for id, rank in tag_dict.items():
-            tag = self.tag_repository.get_tag_by_id(id)
+        for name, rank in tag_dict.items():
+            tag = self.tag_repository.get_tag_by_name(name)
             embeddings.append(tag.embedding)
             weights.append(rank)
 
         return np.average(np.array(embeddings), axis=0, weights=np.array(weights))
 
     def _get_genre_embedding(self, genre_list: list):
+        if not genre_list:
+            return np.zeros(self.sentence_transformer.get_sentence_embedding_dimension())
+
         embeddings = []
 
         for genre_name in genre_list:
@@ -48,11 +51,13 @@ class MediaPreprocessor:
             tag_dict = {}
 
             # Process tags
-            for tag in raw_media_dict.get('tags'):
-                tag_dict[tag["id"]] = tag["rank"]
+            for tag_data in raw_media_dict.get('tags'):
+                tag = self.tag_repository.get_tag_by_id(tag_data["id"])
+                tag_dict[tag.name] = tag_data["rank"]
 
             tag_embedding = self._get_tag_embedding(tag_dict)
 
+            # Process genres
             genres = raw_media_dict.get("genres", [])
 
             genre_embedding = self._get_genre_embedding(genres)

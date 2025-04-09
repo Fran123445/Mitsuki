@@ -40,8 +40,8 @@ async def lifespan(app: FastAPI):
 
     year_filter = YearFilter()
     score_filter = ScoreFilter()
-    genre_exclusion_filter = GenreFilter(genre_repository, True)
-    genre_inclusion_filter = GenreFilter(genre_repository, False)
+    genre_exclusion_filter = GenreFilter(True)
+    genre_inclusion_filter = GenreFilter(False)
     format_filter = FormatFilter()
 
     filter_list = [year_filter, score_filter, genre_exclusion_filter,
