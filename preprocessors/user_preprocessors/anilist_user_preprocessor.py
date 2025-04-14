@@ -1,3 +1,4 @@
+from models.Platform import Platform
 from models.user.media_entry import MediaEntry
 from models.user.user import User
 from preprocessors.user_preprocessors.user_preprocessor import UserPreprocessor
@@ -29,6 +30,6 @@ class AnilistUserPreprocessor(UserPreprocessor):
             for entry in list_data["entries"]:
                 planned_manga.append(entry["mediaId"])
 
-        return User(username, avatar_url, watched_anime, read_manga, planned_anime, planned_manga)
+        return User(username, Platform.ANILIST, avatar_url, watched_anime, read_manga, planned_anime, planned_manga)
 
     

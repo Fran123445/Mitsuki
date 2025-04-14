@@ -1,3 +1,4 @@
+from models.Platform import Platform
 from models.user.media_entry import MediaEntry
 from models.user.user import User
 from preprocessors.user_preprocessors.user_preprocessor import UserPreprocessor
@@ -40,5 +41,5 @@ class MalUserPreprocessor(UserPreprocessor):
             mal_id = entry["mediaId"]
             planned_manga.append(self.manga_id_map.get(mal_id))
 
-        return User(username, avatar_url, watched_anime, read_manga, planned_anime, planned_manga)
+        return User(username, Platform.MYANIMELIST, avatar_url, watched_anime, read_manga, planned_anime, planned_manga)
         
