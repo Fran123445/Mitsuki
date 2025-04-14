@@ -26,11 +26,11 @@ class MalUserPreprocessor(UserPreprocessor):
 
         for entry in raw_user_data["anime"]:
             mal_id = entry["mediaId"]
-            watched_anime.append(MediaEntry(self.anime_id_map.get(mal_id), entry["score"]))
+            watched_anime.append(MediaEntry(self.anime_id_map.get(mal_id), entry["score"]*10))
 
         for entry in raw_user_data["manga"]:
             mal_id = entry["mediaId"]
-            read_manga.append(MediaEntry(self.manga_id_map.get(mal_id), entry["score"]))
+            read_manga.append(MediaEntry(self.manga_id_map.get(mal_id), entry["score"]*10))
 
         for entry in raw_user_data["planned_anime"]:
             mal_id = entry["mediaId"]

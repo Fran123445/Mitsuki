@@ -13,7 +13,9 @@ class RecommendationEngine:
         self.media_repository = media_repository
         self.tag_repository = tag_repository
 
-    def extract_scores(self, user_media_list: list) -> np.ndarray:
+    def extract_scores(self,
+                       user_media_list: list,
+                       tipping_point: int) -> np.ndarray:
         """
         Extract scores from the user media list.
         Replaces missing scores with the average score.
@@ -27,10 +29,7 @@ class RecommendationEngine:
         scores = [media_entry.score for media_entry in user_media_list
                   if self.media_repository.get_media_by_id(media_entry.id)]
 
-        valid_scores = [s for s in scores if s != 0]
-        avg_score = np.average(valid_scores)
-
-        return np.array([s**2 if s != 0 else avg_score for s in scores])
+        return np.array([s if s != 0 else tipping_point for s in scores])
 
     def extract_vectors(
             self,
@@ -64,25 +63,32 @@ class RecommendationEngine:
 
     def compute_user_profiles(
             self,
-            user_media_list: list
+            user_media_list: list,
+            tipping_point: int = 50
     ):
         """
         Computes weighted average profiles for tags and genres.
 
         Args:
             user_media_list: List of user media entries.
+            tipping_point: whatever the user consider a neutral score
 
         Returns:
             A tuple (tag_profile, genre_profile) (might change it later)
         """
-        scores = self.extract_scores(user_media_list)
+        scores = self.extract_scores(user_media_list, tipping_point) - tipping_point
+
         tag_vectors = self.extract_vectors(user_media_list, key="tag_embedding")
         genre_vectors = self.extract_vectors(user_media_list, key="genre_embedding")
 
-        tag_profile = np.average(tag_vectors, axis=0, weights=scores)
-        genre_profile = np.average(genre_vectors, axis=0, weights=scores)
+        scores_reshaped = scores.reshape(1, len(scores))  # numpy yells at me due to not being able to broadcast otherwise
 
-        return tag_profile, genre_profile
+        tag_product = np.dot(scores_reshaped, tag_vectors)
+        genre_product = np.dot(scores_reshaped, genre_vectors)
+
+        denominator = np.sum(np.abs(scores))
+
+        return (tag_product/denominator), (genre_product/denominator)
 
     def get_recommendations(self,
                             media_list: list,
