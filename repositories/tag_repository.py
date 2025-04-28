@@ -18,3 +18,9 @@ class TagRepository(Repository):
 
     def get_tag_by_name(self, tag_name: str):
         return self.get({"tag_name": tag_name}, Tag)
+
+    def get_multiple_tags(self, filter: dict = None, projection: dict = None):
+        return self.get_multiple(Tag, filter, projection)
+
+    def update_tag(self, tag: Tag):
+        return self.update({"tag_id": tag.id}, tag)

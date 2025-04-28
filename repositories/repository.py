@@ -31,3 +31,7 @@ class Repository:
         documents = self._collection.find(query or {}, projection)
 
         return [model_class.from_dict(document) for document in documents]
+
+    def update(self, query: dict, model):
+        result = self._collection.update_one(query, {"$set": model.to_dict()})
+        return result.modified_count
