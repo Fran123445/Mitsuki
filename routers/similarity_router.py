@@ -53,14 +53,12 @@ def _get_user_recommendations(username: str, platform: str, request: Request, pa
         raise ValueError(f"Unsupported platform: {platform}")
 
     if media_type == "anime":
-        watched_media = user_data.watched_anime
         params["planned_media"] = user_data.planned_anime
-        return request.app.state.anime_recommendation_service.get_recommendations_from_user(watched_media,
+        return request.app.state.anime_recommendation_service.get_recommendations_from_user(user_data,
                                                                                             params["top_n"], params)
     elif media_type == "manga":
-        watched_media = user_data.read_manga
         params["planned_media"] = user_data.planned_manga
-        return request.app.state.manga_recommendation_service.get_recommendations_from_user(watched_media,
+        return request.app.state.manga_recommendation_service.get_recommendations_from_user(user_data,
                                                                                             params["top_n"], params)
     else:
         raise ValueError(f"Unsupported media type: {media_type}")
