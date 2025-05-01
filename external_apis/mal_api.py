@@ -1,15 +1,14 @@
-from dotenv import load_dotenv
-
 from external_apis.external_api import ExternalApi
 import requests
-import os
 
 class MalApi(ExternalApi):
 
-    load_dotenv()
     BASE_API_URL = "https://api.myanimelist.net/v2"
     BASE_SITE_URL = "https://myanimelist.net"
-    client_id = os.getenv("MAL_CLIENT_ID")
+
+    def __init__(self,
+                 client_id: str):
+        self.client_id = client_id
 
     def _fetch_user_avatar(self, username):
         url = f"https://api.jikan.moe/v4/users/{username}"

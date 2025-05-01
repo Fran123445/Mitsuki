@@ -1,30 +1,37 @@
 import json
+import os
 from contextlib import asynccontextmanager
 
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI
-from pymongo import MongoClient
 from fastapi.middleware.cors import CORSMiddleware
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
+from external_apis.anilist_api import AnilistApi
 from external_apis.mal_api import MalApi
+from preprocessors.user_preprocessors.anilist_user_preprocessor import AnilistUserPreprocessor
 from preprocessors.user_preprocessors.mal_user_preprocessor import MalUserPreprocessor
+from repositories.media_repository import MediaRepository
+from routers import similarity_router, user_router
 from services.recommendation_service.media_list_filters.format_filter import FormatFilter
 from services.recommendation_service.media_list_filters.genre_filter import GenreFilter
 from services.recommendation_service.media_list_filters.score_filter import ScoreFilter
 from services.recommendation_service.media_list_filters.year_filter import YearFilter
 from services.recommendation_service.recommendation_engine import RecommendationEngine
-from repositories.media_repository import MediaRepository
-from routers import similarity_router, user_router
 from services.recommendation_service.recommendation_service import RecommendationService
 from services.recommendation_service.user_rec_profile_processor import UserRecProfileProcessor
 from services.user_fetching_service.user_fetching_service import UserFetchingService
-from preprocessors.user_preprocessors.anilist_user_preprocessor import AnilistUserPreprocessor
-from external_apis.anilist_api import AnilistApi
+
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    client_id = os.getenv("MAL_CLIENT_ID")
+    mongo_uri = os.getenv("MONGO_URI")
 
-    mongo_client = MongoClient()
+    mongo_client = MongoClient(mongo_uri, server_api=ServerApi('1'))
     database_name = config["database_name"]
 
     anime_repository = MediaRepository(mongo_client, database_name, "anime")
@@ -47,7 +54,7 @@ async def lifespan(app: FastAPI):
                    genre_inclusion_filter, format_filter]
 
     app.state.anilist_user_fetching_service = UserFetchingService(AnilistApi(), AnilistUserPreprocessor())
-    app.state.mal_user_fetching_service = UserFetchingService(MalApi(), MalUserPreprocessor(anime_repository, manga_repository))
+    app.state.mal_user_fetching_service = UserFetchingService(MalApi(client_id), MalUserPreprocessor(anime_repository, manga_repository))
 
     app.state.anime_recommendation_service = RecommendationService(anime_repository,
                                                                    anime_user_rec_profile_processor,
