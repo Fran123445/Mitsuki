@@ -94,5 +94,9 @@ app.add_middleware(
 def root():
     return {"message": "Welcome to the Anilist Recommender API"}
 
+@app.head("/")
+def head():
+    return None
+
 if __name__ == "__main__":
     uvicorn.run(app)
