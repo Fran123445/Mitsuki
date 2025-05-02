@@ -2,8 +2,13 @@ from pymongo import MongoClient
 
 
 class Repository:
-    def __init__(self, mongo_client: MongoClient, database_name: str, collection_name: str):
+    def __init__(self,
+                 mongo_client: MongoClient,
+                 database_name: str,
+                 collection_name: str,
+                 batch_size: int):
         self._collection = mongo_client[database_name][collection_name]
+        self.batch_size = batch_size
 
     def insert(self, document: dict):
         return self._collection.insert_one(document)
@@ -28,7 +33,7 @@ class Repository:
         return self._collection.count_documents({})
 
     def get_multiple(self, model_class, query: dict = None, projection: dict = None):
-        documents = self._collection.find(query or {}, projection)
+        documents = self._collection.find(query or {}, projection).batch_size(self.batch_size)
 
         return [model_class.from_dict(document) for document in documents]
 

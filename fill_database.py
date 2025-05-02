@@ -1,7 +1,9 @@
 import json
+import os
 import time
 
 import sentence_transformers
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
 from external_apis.anilist_api import AnilistApi
@@ -12,16 +14,20 @@ from repositories.genre_repository import GenreRepository
 from repositories.media_repository import MediaRepository
 from repositories.tag_repository import TagRepository
 
+load_dotenv()
+
+batch_size = int(os.getenv("MONGO_BATCH_SIZE"))
+
 config = json.load(open("config.json"))
 
 api_client = AnilistApi()
 
 mongo_client = MongoClient()
 database_name = config["database_name"]
-tag_repository = TagRepository(mongo_client, database_name)
-genre_repository = GenreRepository(mongo_client, database_name)
-anime_repository = MediaRepository(mongo_client, database_name, "anime")
-manga_repository = MediaRepository(mongo_client, database_name, "manga")
+tag_repository = TagRepository(mongo_client, batch_size, database_name)
+genre_repository = GenreRepository(mongo_client, batch_size, database_name)
+anime_repository = MediaRepository(mongo_client, database_name, batch_size, "anime")
+manga_repository = MediaRepository(mongo_client, database_name, batch_size,"manga")
 
 transformer = sentence_transformers.SentenceTransformer(config["transformer_model"])
 

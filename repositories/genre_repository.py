@@ -4,8 +4,11 @@ from repositories.repository import Repository
 
 
 class GenreRepository(Repository):
-    def __init__(self, mongo_client: MongoClient, database_name: str = "genres"):
-        super().__init__(mongo_client, database_name, 'genres')
+    def __init__(self,
+                 mongo_client: MongoClient,
+                 batch_size: int,
+                 database_name: str = "genres"):
+        super().__init__(mongo_client, database_name, 'genres', batch_size)
 
     def create_genre(self, genre: Genre):
         return self.create(genre)

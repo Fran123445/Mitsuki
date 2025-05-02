@@ -4,8 +4,12 @@ from repositories.repository import Repository
 
 
 class MediaRepository(Repository):
-    def __init__(self, mongo_client: MongoClient, database_name: str, collection_name: str = "anime"):
-        super().__init__(mongo_client, database_name, collection_name)
+    def __init__(self,
+                 mongo_client: MongoClient,
+                 database_name: str,
+                 batch_size: int,
+                 collection_name: str = "anime"):
+        super().__init__(mongo_client, database_name, collection_name, batch_size)
         self.cache = None
 
     def create_media(self, media: Media):

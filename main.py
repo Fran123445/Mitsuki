@@ -11,6 +11,7 @@ from pymongo.server_api import ServerApi
 
 from external_apis.anilist_api import AnilistApi
 from external_apis.mal_api import MalApi
+from models.media import Media
 from preprocessors.user_preprocessors.anilist_user_preprocessor import AnilistUserPreprocessor
 from preprocessors.user_preprocessors.mal_user_preprocessor import MalUserPreprocessor
 from repositories.media_repository import MediaRepository
@@ -30,12 +31,13 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     client_id = os.getenv("MAL_CLIENT_ID")
     mongo_uri = os.getenv("MONGO_URI")
+    batch_size = int(os.getenv("MONGO_BATCH_SIZE"))
 
     mongo_client = MongoClient(mongo_uri, server_api=ServerApi('1'))
     database_name = config["database_name"]
 
-    anime_repository = MediaRepository(mongo_client, database_name, "anime")
-    manga_repository = MediaRepository(mongo_client, database_name, "manga")
+    anime_repository = MediaRepository(mongo_client, database_name, batch_size, "anime")
+    manga_repository = MediaRepository(mongo_client, database_name, batch_size, "manga")
 
     recommendation_engine = RecommendationEngine()
 
@@ -77,7 +79,7 @@ app.include_router(similarity_router.router)
 app.include_router(user_router.router)
 
 origins = [
-    "http://localhost:5173"
+    os.getenv("FRONTEND_URL"),
 ]
 
 app.add_middleware(
