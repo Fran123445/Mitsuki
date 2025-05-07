@@ -1,14 +1,8 @@
-from pymongo import MongoClient
 from common.models.tag import Tag
 from common.repositories.repository import Repository
 
 
 class TagRepository(Repository):
-    def __init__(self,
-                 mongo_client: MongoClient,
-                 batch_size: int,
-                 database_name: str = "tags"):
-        super().__init__(mongo_client, database_name, 'tags', batch_size)
 
     def create_tag(self, tag: Tag):
         return self.create(tag)

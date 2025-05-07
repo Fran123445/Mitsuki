@@ -9,7 +9,7 @@ class MediaRepository(Repository):
                  database_name: str,
                  batch_size: int,
                  collection_name: str = "anime"):
-        super().__init__(mongo_client, database_name, collection_name, batch_size)
+        super().__init__(mongo_client, database_name, batch_size, collection_name)
         self.cache = None
 
     def create_media(self, media: Media):

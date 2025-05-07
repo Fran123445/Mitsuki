@@ -24,8 +24,8 @@ api_client = AnilistApi()
 
 mongo_client = MongoClient()
 database_name = config["database_name"]
-tag_repository = TagRepository(mongo_client, batch_size, database_name)
-genre_repository = GenreRepository(mongo_client, batch_size, database_name)
+tag_repository = TagRepository(mongo_client, database_name, batch_size, "tags")
+genre_repository = GenreRepository(mongo_client, database_name, batch_size, "genres")
 anime_repository = MediaRepository(mongo_client, database_name, batch_size, "anime")
 manga_repository = MediaRepository(mongo_client, database_name, batch_size,"manga")
 
