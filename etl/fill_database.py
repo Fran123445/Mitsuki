@@ -55,7 +55,6 @@ if anime_repository.get_total_amount() == 0:
         anime_page = api_client.get_anime(page=page)
         anime_list = media_preprocessor.preprocess(anime_page)
         anime_repository.create_many_media(anime_list)
-        time.sleep(2)  # avoid rate limit
 
 print("Anime loaded")
 
@@ -65,6 +64,5 @@ if manga_repository.get_total_amount() == 0:
         manga_page = api_client.get_manga(page=page)
         manga_list = media_preprocessor.preprocess(manga_page)
         manga_repository.create_many_media(manga_list)
-        time.sleep(2)  # avoid rate limit
 
 print("Manga loaded")

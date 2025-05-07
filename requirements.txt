@@ -4,3 +4,4 @@ scipy>=1.15.1
 numpy>=2.2.2
 sentence-transformers>=3.4.1
 fastapi[standard]>=0.115.8
+ratelimit>=2.2.1

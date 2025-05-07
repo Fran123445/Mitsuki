@@ -1,4 +1,5 @@
 import requests
+from ratelimit import limits, sleep_and_retry
 
 from common.external_apis.external_api import ExternalApi
 
@@ -6,6 +7,8 @@ from common.external_apis.external_api import ExternalApi
 class AnilistApi(ExternalApi):
     BASE_URL = 'https://graphql.anilist.co'
 
+    @sleep_and_retry
+    @limits(calls=85, period=60)
     def query(self, query: str, variables: dict = None) -> dict:
         json_data = {"query": query}
         if variables:
