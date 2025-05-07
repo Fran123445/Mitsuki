@@ -1,5 +1,5 @@
 from common.repositories.repository import Repository
-from ml_model.models.user_anime_recommendations import UserAnimeRecommendations
+from common.models.user_anime_recommendations import UserAnimeRecommendations
 
 
 class UserAnimeRecommendationsRepository(Repository):
