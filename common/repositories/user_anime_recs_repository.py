@@ -1,14 +1,14 @@
 from common.repositories.repository import Repository
-from common.models.user_anime_recommendations import UserAnimeRecommendations
+from common.models.user_media_recommendations import UserMediaRecommendations
 
 
-class UserAnimeRecommendationsRepository(Repository):
+class UserMediaRecommendationsRepository(Repository):
 
-    def create_user_anime_recommendation(self, user_anime_recommendation: UserAnimeRecommendations):
-        return self.create(user_anime_recommendation)
+    def create_user_media_recommendation(self, user_media_recommendation: UserMediaRecommendations):
+        return self.create(user_media_recommendation)
 
-    def create_many_user_anime_recommendations(self, user_anime_recommendations: list[UserAnimeRecommendations]):
-        return self.create_many(user_anime_recommendations)
+    def create_many_user_media_recommendations(self, user_media_recommendations: list[UserMediaRecommendations]):
+        return self.create_many(user_media_recommendations)
 
-    def get_user_anime_recommendation_by_anime_id(self, id: int):
-        return self.get({"id": id}, UserAnimeRecommendations)
+    def get_user_media_recommendation_by_id(self, id: int):
+        return self.get({"id": id}, UserMediaRecommendations)

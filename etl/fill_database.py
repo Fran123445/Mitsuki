@@ -10,9 +10,11 @@ from common.external_apis.anilist_api import AnilistApi
 from common.preprocessors.genre_preprocessor import GenrePreprocessor
 from common.preprocessors.media_preprocessor import MediaPreprocessor
 from common.preprocessors.tag_preprocessor import TagPreprocessor
+from common.preprocessors.user_media_recs_preprocessor import UserMediaRecsPreprocessor
 from common.repositories.genre_repository import GenreRepository
 from common.repositories.media_repository import MediaRepository
 from common.repositories.tag_repository import TagRepository
+from common.repositories.user_anime_recs_repository import UserMediaRecommendationsRepository
 
 load_dotenv()
 
@@ -28,12 +30,15 @@ tag_repository = TagRepository(mongo_client, database_name, batch_size, "tags")
 genre_repository = GenreRepository(mongo_client, database_name, batch_size, "genres")
 anime_repository = MediaRepository(mongo_client, database_name, batch_size, "anime")
 manga_repository = MediaRepository(mongo_client, database_name, batch_size,"manga")
+user_anime_recs_repository = UserMediaRecommendationsRepository(mongo_client, database_name, batch_size, "user_anime_recommendations")
+user_manga_recs_repository = UserMediaRecommendationsRepository(mongo_client, database_name, batch_size, "user_manga_recommendations")
 
 transformer = sentence_transformers.SentenceTransformer(config["transformer_model"])
 
 tag_preprocessor = TagPreprocessor(transformer)
 genre_preprocessor = GenrePreprocessor(transformer)
 media_preprocessor = MediaPreprocessor(genre_repository, tag_repository, transformer)
+user_media_recs_preprocessor = UserMediaRecsPreprocessor()
 
 if tag_repository.get_total_amount() == 0:
     tags = api_client.get_tags()
@@ -54,6 +59,7 @@ if anime_repository.get_total_amount() == 0:
         print(page)
         anime_page = api_client.get_anime(page=page)
         anime_list = media_preprocessor.preprocess(anime_page)
+
         anime_repository.create_many_media(anime_list)
 
 print("Anime loaded")

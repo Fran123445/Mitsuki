@@ -1,7 +1,7 @@
-from common.models.user_anime_recommendations import UserAnimeRecommendations
+from common.models.user_media_recommendations import UserMediaRecommendations
 
 
-class UserAnimeRecsPreprocessor:
+class UserMediaRecsPreprocessor:
 
     def preprocess(self,
                    raw_media_list: list[dict]):
@@ -18,6 +18,6 @@ class UserAnimeRecsPreprocessor:
 
                 recommendations_dict[rec_id] = rec_rating
 
-            recs_list.append(UserAnimeRecommendations(raw_media_data["id"], recommendations_dict))
+            recs_list.append(UserMediaRecommendations(raw_media_data["id"], recommendations_dict))
 
         return recs_list

@@ -1,5 +1,5 @@
 
-class UserAnimeRecommendations:
+class UserMediaRecommendations:
 
     def __init__(self,
                  id: int,
