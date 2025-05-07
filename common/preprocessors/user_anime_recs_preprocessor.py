@@ -4,15 +4,20 @@ from common.models.user_anime_recommendations import UserAnimeRecommendations
 class UserAnimeRecsPreprocessor:
 
     def preprocess(self,
-                   raw_anime_data):
-        recommendation_list = raw_anime_data["recommendations"]["edge"]
+                   raw_media_list: list[dict]):
+        recs_list = []
 
-        recommendations_dict = {}
+        for raw_media_data in raw_media_list:
+            raw_recs_list = raw_media_data["recommendations"]["edge"]
 
-        for recommendation in recommendation_list:
-            rec_id = recommendation["node"]["mediaRecommendation"]["id"]
-            rec_rating = recommendation["rating"]
+            recommendations_dict = {}
 
-            recommendations_dict[rec_id] = rec_rating
+            for recommendation in raw_recs_list:
+                rec_id = recommendation["node"]["mediaRecommendation"]["id"]
+                rec_rating = recommendation["rating"]
 
-        return UserAnimeRecommendations(raw_anime_data["id"], recommendations_dict)
+                recommendations_dict[rec_id] = rec_rating
+
+            recs_list.append(UserAnimeRecommendations(raw_media_data["id"], recommendations_dict))
+
+        return recs_list
