@@ -59,8 +59,10 @@ if anime_repository.get_total_amount() == 0:
         print(page)
         anime_page = api_client.get_anime(page=page)
         anime_list = media_preprocessor.preprocess(anime_page)
+        user_anime_recs_list = user_media_recs_preprocessor.preprocess(anime_page)
 
         anime_repository.create_many_media(anime_list)
+        user_anime_recs_repository.create_many_user_media_recommendations(user_anime_recs_list)
 
 print("Anime loaded")
 
@@ -69,6 +71,9 @@ if manga_repository.get_total_amount() == 0:
         print(page)
         manga_page = api_client.get_manga(page=page)
         manga_list = media_preprocessor.preprocess(manga_page)
+        user_manga_recs_list = user_media_recs_preprocessor.preprocess(manga_page)
+
         manga_repository.create_many_media(manga_list)
+        user_manga_recs_repository.create_many_user_media_recommendations(user_manga_recs_list)
 
 print("Manga loaded")
