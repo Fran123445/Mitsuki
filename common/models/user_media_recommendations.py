@@ -11,7 +11,7 @@ class UserMediaRecommendations:
     def to_dict(self):
         return {
             "id": self.id,
-            "recommendations": self.recommendations
+            "recommendations": {str(k): v for k, v in self.recommendations.items()}
         }
 
     @classmethod
@@ -20,5 +20,5 @@ class UserMediaRecommendations:
             return None
         return cls(
             id=data['id'],
-            recommendations=data['recommendations']
+            recommendations={int(k):v for k,v in data['recommendations'].items()}
         )
