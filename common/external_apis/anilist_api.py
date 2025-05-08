@@ -40,7 +40,7 @@ class AnilistApi(ExternalApi):
 
     def get_anime(self, page: int) -> list:
         query = """
-        query ($page: Int) {
+        query ($page: Int, $recsPerPage: Int, $recsSort: [RecommendationSort]) {
           Page(page: $page, perPage: 50) {
             media(sort: POPULARITY_DESC, type: ANIME, format_in: [TV, MOVIE, OVA, ONA, TV_SHORT],
                   status_in: [FINISHED, RELEASING]) {
@@ -66,17 +66,30 @@ class AnilistApi(ExternalApi):
               popularity
               isAdult
               format
+              recommendations(perPage: $recsPerPage, sort: $recsSort) {
+                edges {
+                  node {
+                    mediaRecommendation {
+                      id
+                      title {
+                        romaji
+                      }
+                    }
+                    rating
+                  }
+                }
+              }
             }
           }
         }
         """
-        variables = {"page": page}
+        variables = {"page": page, "recsPerPage": 10, "recsSort": "RATING_DESC"}
         data = self.query(query, variables)
         return data["data"]["Page"]["media"]
 
     def get_manga(self, page: int):
         query = """
-                query ($page: Int) {
+                query ($page: Int, $recsPerPage: Int, $recsSort: [RecommendationSort]) {
                   Page(page: $page, perPage: 50) {
                     media(sort: POPULARITY_DESC, type: MANGA,
                           status_in: [FINISHED, RELEASING]) {
@@ -102,11 +115,24 @@ class AnilistApi(ExternalApi):
                       popularity
                       isAdult
                       format
+                      recommendations(perPage: $recsPerPage, sort: $recsSort) {
+                        edges {
+                          node {
+                            mediaRecommendation {
+                              id
+                              title {
+                                romaji
+                              }
+                            }
+                            rating
+                          }
+                        }
+                      }
                     }
                   }
                 }
                 """
-        variables = {"page": page}
+        variables = {"page": page, "recsPerPage": 10, "recsSort": "RATING_DESC"}
         data = self.query(query, variables)
         return data["data"]["Page"]["media"]
 
