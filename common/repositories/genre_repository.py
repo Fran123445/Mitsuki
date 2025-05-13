@@ -11,3 +11,6 @@ class GenreRepository(Repository):
 
     def get_genre_by_name(self, genre_name: str):
         return self.get({"genre_name": genre_name}, Genre)
+
+    def get_multiple_genres(self, filter: dict = None, projection: dict = None):
+        return self.get_multiple(Genre, filter, projection)
