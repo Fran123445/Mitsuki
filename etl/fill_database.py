@@ -57,7 +57,7 @@ print("Genres loaded")
 if anime_repository.get_total_amount() == 0:
     for page in range(1, 201):
         print(page)
-        anime_page = api_client.get_anime(page=page)
+        anime_page = api_client.get_anime(page=page, recs_per_page=100)
         anime_list = media_preprocessor.preprocess(anime_page)
         user_anime_recs_list = user_media_recs_preprocessor.preprocess(anime_page)
 
@@ -69,7 +69,7 @@ print("Anime loaded")
 if manga_repository.get_total_amount() == 0:
     for page in range(1, 201):
         print(page)
-        manga_page = api_client.get_manga(page=page)
+        manga_page = api_client.get_manga(page=page, recs_per_page=100)
         manga_list = media_preprocessor.preprocess(manga_page)
         user_manga_recs_list = user_media_recs_preprocessor.preprocess(manga_page)
 

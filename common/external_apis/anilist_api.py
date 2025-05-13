@@ -38,7 +38,7 @@ class AnilistApi(ExternalApi):
         data = self.query(query)
         return data["data"]["GenreCollection"]
 
-    def get_anime(self, page: int) -> list:
+    def get_anime(self, page: int, recs_per_page: int) -> list:
         query = """
         query ($page: Int, $recsPerPage: Int, $recsSort: [RecommendationSort]) {
           Page(page: $page, perPage: 50) {
@@ -83,11 +83,11 @@ class AnilistApi(ExternalApi):
           }
         }
         """
-        variables = {"page": page, "recsPerPage": 10, "recsSort": "RATING_DESC"}
+        variables = {"page": page, "recsPerPage": recs_per_page, "recsSort": "RATING_DESC"}
         data = self.query(query, variables)
         return data["data"]["Page"]["media"]
 
-    def get_manga(self, page: int):
+    def get_manga(self, page: int, recs_per_page: int):
         query = """
                 query ($page: Int, $recsPerPage: Int, $recsSort: [RecommendationSort]) {
                   Page(page: $page, perPage: 50) {
@@ -132,7 +132,7 @@ class AnilistApi(ExternalApi):
                   }
                 }
                 """
-        variables = {"page": page, "recsPerPage": 10, "recsSort": "RATING_DESC"}
+        variables = {"page": page, "recsPerPage": recs_per_page, "recsSort": "RATING_DESC"}
         data = self.query(query, variables)
         return data["data"]["Page"]["media"]
 
