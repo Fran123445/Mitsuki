@@ -1,4 +1,7 @@
+from typing import Any, TypeVar
 from pymongo import MongoClient
+
+T = TypeVar("T")
 
 
 class MongoDataStore:
@@ -6,22 +9,32 @@ class MongoDataStore:
         self._db = mongo_client[database_name]
         self._batch_size = batch_size
 
-    def insert_one(self, collection: str, document: dict):
-        return self._db[collection].insert_one(document)
+    def insert_one(self, table: str, object: T) -> Any:
+        result = self._db[table].insert_one(object.to_dict())
+        return result.inserted_id
 
-    def insert_many(self, collection: str, documents: list[dict]):
-        return self._db[collection].insert_many(documents)
+    def insert_many(self, table: str, objects: list[T]) -> Any:
+        result = self._db[table].insert_many([obj.to_dict() for obj in objects])
+        return result.inserted_ids
 
-    def find_one(self, collection: str, query: dict) -> dict | None:
-        return self._db[collection].find_one(query)
+    def find_one(self, table: str, model_class: type[T], field: str, value: Any) -> T | None:
+        doc = self._db[table].find_one({field: value})
+        return model_class.from_dict(doc) if doc else None
 
-    def find_many(self, collection: str, query: dict, projection: dict | None = None) -> list[dict]:
-        cursor = self._db[collection].find(query or {}, projection).batch_size(self._batch_size)
-        return list(cursor)
+    def find_many(
+        self,
+        table: str,
+        model_class: type[T],
+        field: str | None = None,
+        value: Any | None = None,
+    ) -> list[T]:
+        query = {field: value} if field else {}
+        cursor = self._db[table].find(query).batch_size(self._batch_size)
+        return [model_class.from_dict(doc) for doc in cursor]
 
-    def count(self, collection: str) -> int:
-        return self._db[collection].count_documents({})
+    def count(self, table: str) -> int:
+        return self._db[table].count_documents({})
 
-    def update_one(self, collection: str, query: dict, document: dict) -> int:
-        result = self._db[collection].update_one(query, {"$set": document})
+    def update_one(self, table: str, field: str, value: Any, object: T) -> int:
+        result = self._db[table].update_one({field: value}, {"$set": object.to_dict()})
         return result.modified_count
