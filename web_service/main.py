@@ -14,6 +14,7 @@ from common.external_apis.mal_api import MalApi
 from common.preprocessors.user_preprocessors.anilist_user_preprocessor import AnilistUserPreprocessor
 from common.preprocessors.user_preprocessors.mal_user_preprocessor import MalUserPreprocessor
 from common.repositories.media_repository import MediaRepository
+from common.repositories.mongo_data_store import MongoDataStore
 from web_service.routers import similarity_router, user_router
 from web_service.services.recommendation_service.media_list_filters.format_filter import FormatFilter
 from web_service.services.recommendation_service.media_list_filters.genre_filter import GenreFilter
@@ -34,9 +35,10 @@ async def lifespan(app: FastAPI):
 
     mongo_client = MongoClient(mongo_uri, server_api=ServerApi('1'))
     database_name = config["database_name"]
+    store = MongoDataStore(mongo_client, database_name, batch_size)
 
-    anime_repository = MediaRepository(mongo_client, database_name, batch_size, "anime")
-    manga_repository = MediaRepository(mongo_client, database_name, batch_size, "manga")
+    anime_repository = MediaRepository(store, "anime")
+    manga_repository = MediaRepository(store, "manga")
 
     recommendation_engine = RecommendationEngine()
 

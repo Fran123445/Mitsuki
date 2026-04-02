@@ -4,6 +4,8 @@ import sentence_transformers
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+from common.repositories.mongo_data_store import MongoDataStore
+
 from common.external_apis.anilist_api import AnilistApi
 from common.preprocessors.genre_preprocessor import GenrePreprocessor
 from common.preprocessors.media_preprocessor import MediaPreprocessor
@@ -27,13 +29,15 @@ def main():
     transformer = sentence_transformers.SentenceTransformer(config["transformer_model"])
 
     # --- Repositories ---
+    store = MongoDataStore(mongo_client, db_name, batch_size)
+
     repos = {
-        "tag": TagRepository(mongo_client, db_name, batch_size, "tags"),
-        "genre": GenreRepository(mongo_client, db_name, batch_size, "genres"),
-        "anime": MediaRepository(mongo_client, db_name, batch_size, "anime"),
-        "manga": MediaRepository(mongo_client, db_name, batch_size, "manga"),
-        "user_anime_recs": UserMediaRecommendationsRepository(mongo_client, db_name, batch_size, "user_anime_recommendations"),
-        "user_manga_recs": UserMediaRecommendationsRepository(mongo_client, db_name, batch_size, "user_manga_recommendations")
+        "tag": TagRepository(store),
+        "genre": GenreRepository(store),
+        "anime": MediaRepository(store, "anime"),
+        "manga": MediaRepository(store, "manga"),
+        "user_anime_recs": UserMediaRecommendationsRepository(store, "user_anime_recommendations"),
+        "user_manga_recs": UserMediaRecommendationsRepository(store, "user_manga_recommendations")
     }
 
     # --- Preprocessors ---

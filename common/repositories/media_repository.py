@@ -1,38 +1,33 @@
-from pymongo import MongoClient
 from common.models.media import Media
-from common.repositories.repository import Repository
+from common.repositories.data_store import DataStore
 
 
-class MediaRepository(Repository):
-    def __init__(self,
-                 mongo_client: MongoClient,
-                 database_name: str,
-                 batch_size: int,
-                 collection_name: str = "anime"):
-        super().__init__(mongo_client, database_name, batch_size, collection_name)
-        self.cache = None
+class MediaRepository:
+    def __init__(self, store: DataStore, collection: str = "anime"):
+        self._store = store
+        self._collection = collection
+        self._cache = None
 
     def create_media(self, media: Media):
-        return self.create(media)
+        return self._store.insert_one(self._collection, media.to_dict())
 
     def create_many_media(self, media_list: list[Media]):
-        return self.create_many(media_list)
+        return self._store.insert_many(self._collection, [m.to_dict() for m in media_list])
 
-    def get_media_by_id(self, media_id: int):
-        if not self.cache:
-            self.create_cache()
+    def get_media_by_id(self, media_id: int) -> Media | None:
+        if not self._cache:
+            self._create_cache()
+        return self._cache.get(media_id)
 
-        return self.cache.get(media_id)
+    def get_all_media(self) -> list[Media]:
+        if not self._cache:
+            self._create_cache()
+        return list(self._cache.values())
 
-    def get_multiple_media(self, filter: dict = None, projection: dict = None):
-        if filter is None and projection is None:
-            if not self.cache:
-                self.create_cache()
-                
-            return list(self.cache.values()) # not exactly performant but ram is limited
+    def get_total_amount(self) -> int:
+        return self._store.count(self._collection)
 
-        return self.get_multiple(Media, filter, projection)
-
-    def create_cache(self):
-        media_list = self.get_multiple(Media)
-        self.cache = {media.id: media for media in media_list}
+    def _create_cache(self):
+        docs = self._store.find_many(self._collection, {})
+        media_list = [Media.from_dict(d) for d in docs]
+        self._cache = {media.id: media for media in media_list}
