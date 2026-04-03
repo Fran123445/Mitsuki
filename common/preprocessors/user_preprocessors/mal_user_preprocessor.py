@@ -14,7 +14,7 @@ class MalUserPreprocessor(UserPreprocessor):
         self.manga_id_map = self._get_id_map(self.manga_repository)
 
     def _get_id_map(self, repository):
-        media_list = repository.get_multiple_media()
+        media_list = repository.get_all_media()
         return {media.id_mal: media.id for media in media_list if media.id_mal and media.id}
 
     def preprocess(self, raw_user_data):

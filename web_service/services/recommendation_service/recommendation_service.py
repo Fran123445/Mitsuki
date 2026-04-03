@@ -45,7 +45,7 @@ class RecommendationService:
                              tag_profile: np.ndarray,
                              genre_profile: np.ndarray,
                              filter_params: dict = None):
-        media_list = self.media_repository.get_multiple_media()
+        media_list = self.media_repository.get_all_media()
 
         excluded_ids_set = {entry.id for entry in excluded_media}
 
